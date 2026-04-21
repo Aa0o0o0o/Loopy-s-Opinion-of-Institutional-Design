@@ -54,7 +54,7 @@ const { title, description = "Loopy's Opinion of Institutional Design" } = Astro
 <body>
   <header>
     <div class="container">
-      <h1><a href="/loopy-opinion/">Loopy's Opinion of Institutional Design</a></h1>
+      <h1><a href={import.meta.env.BASE_URL}>Loopy's Opinion of Institutional Design</a></h1>
       <p>关于制度设计的个人思考与随笔</p>
     </div>
   </header>
