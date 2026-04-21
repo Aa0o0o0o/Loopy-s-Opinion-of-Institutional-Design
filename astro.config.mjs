@@ -1,7 +1,8 @@
 import { defineConfig } from 'astro/config';
 
 export default defineConfig({
-  site: 'https://Aa0o0o0o.github.io',
+  site: 'https://Aa0c0o0.github.io',
   base: '/Loopy-s-Opinion-of-Institutional-Design',
-  output: 'static'
+  output: 'static',
+  trailingSlash: 'always',   
 });
