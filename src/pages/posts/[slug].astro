@@ -1,0 +1,74 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts');
+  return posts.map(post => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await post.render();
+---
+<Layout title={`${post.data.title} | Loopy's Opinion`} description={post.data.description}>
+  <style>
+    .post-header { margin-bottom: 2rem; }
+    .post-header h1 { font-size: 1.75rem; margin-bottom: 0.5rem; }
+    .post-meta { color: var(--muted); font-size: 0.875rem; }
+    .pdf-box {
+      margin: 2rem 0;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      background: var(--card);
+    }
+    .pdf-box iframe { width: 100%; height: 80vh; border: none; }
+    .pdf-fallback {
+      padding: 2rem;
+      text-align: center;
+    }
+    .content { font-size: 1.05rem; }
+    .content p { margin-bottom: 1rem; }
+    .btn {
+      display: inline-block;
+      background: var(--accent);
+      color: white;
+      padding: 0.6rem 1.2rem;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      margin-top: 1rem;
+    }
+    .btn:hover { text-decoration: none; opacity: 0.9; }
+    .back { margin-bottom: 2rem; font-size: 0.9rem; }
+  </style>
+
+  <div class="back"><a href="/loopy-opinion/">← 返回首页</a></div>
+
+  <article>
+    <div class="post-header">
+      <h1>{post.data.title}</h1>
+      <div class="post-meta">
+        {post.data.date.toLocaleDateString('zh-CN')}
+        {post.data.tags && post.data.tags.map(tag => ` · ${tag}`)}
+      </div>
+    </div>
+
+    {post.data.pdf && (
+      <div class="pdf-box">
+        <iframe src={`/loopy-opinion/pdfs/${post.data.pdf}`} title={post.data.title}>
+          <div class="pdf-fallback">
+            <p>你的浏览器不支持内嵌 PDF。</p>
+            <a class="btn" href={`/loopy-opinion/pdfs/${post.data.pdf}`} target="_blank">下载 PDF</a>
+          </div>
+        </iframe>
+      </div>
+    )}
+
+    <div class="content">
+      <Content />
+    </div>
+  </article>
+</Layout>
