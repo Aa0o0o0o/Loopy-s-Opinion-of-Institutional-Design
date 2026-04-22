@@ -5,49 +5,183 @@ import { getCollection } from 'astro:content';
 const posts = (await getCollection('posts')).sort(
   (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
 );
+
+const totalPosts = posts.length;
 ---
 <Layout title="Loopy's Opinion of Institutional Design">
   <style>
+    .journal-stats {
+      display: flex;
+      gap: 2rem;
+      margin-bottom: 2.5rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+      font-family: "Noto Sans SC", sans-serif;
+      font-size: 0.85rem;
+      color: var(--muted);
+      flex-wrap: wrap;
+    }
+    .journal-stats span strong {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
     .post-list { display: flex; flex-direction: column; gap: 2rem; }
     .post-item {
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 1.5rem;
-      transition: box-shadow 0.2s;
+      border-radius: 4px;
+      padding: 1.75rem;
+      transition: all 0.25s ease;
+      position: relative;
     }
-    .post-item:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-    .post-item h2 { font-size: 1.25rem; margin-bottom: 0.5rem; }
+    .post-item:hover {
+      box-shadow: 0 6px 20px rgba(30, 58, 95, 0.08);
+      border-color: #c4bfb5;
+    }
+    .post-item::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 3px;
+      height: 100%;
+      background: var(--accent);
+      opacity: 0;
+      transition: opacity 0.25s;
+    }
+    .post-item:hover::before {
+      opacity: 1;
+    }
+    .post-item h2 {
+      font-size: 1.15rem;
+      margin-bottom: 0.6rem;
+      font-weight: 600;
+    }
     .post-item h2 a { color: var(--text); }
-    .post-meta { color: var(--muted); font-size: 0.875rem; margin-bottom: 0.75rem; }
-    .post-desc { color: var(--muted); font-size: 0.95rem; }
+    .post-item h2 a:hover { text-decoration: none; color: var(--accent); }
+    .post-meta {
+      color: var(--muted);
+      font-size: 0.8rem;
+      margin-bottom: 0.75rem;
+      font-family: "Noto Sans SC", sans-serif;
+    }
+    .post-desc {
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.7;
+    }
     .tags { margin-top: 0.75rem; }
     .tag {
       display: inline-block;
-      background: #edf2f7;
+      background: #e8e4db;
       color: var(--accent);
-      font-size: 0.75rem;
-      padding: 0.25rem 0.6rem;
-      border-radius: 999px;
-      margin-right: 0.5rem;
+      font-size: 0.7rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 2px;
+      margin-right: 0.4rem;
+      font-family: "Noto Sans SC", sans-serif;
+      letter-spacing: 0.02em;
     }
+    .pdf-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      background: var(--accent);
+      color: #fff;
+      font-size: 0.65rem;
+      padding: 0.15rem 0.4rem;
+      border-radius: 2px;
+      margin-left: 0.5rem;
+      font-family: "Noto Sans SC", sans-serif;
+      vertical-align: middle;
+    }
+
+    /* Loopy corner decoration */
+    .loopy-corner {
+      position: absolute;
+      top: -8px;
+      right: 12px;
+      width: 28px;
+      height: 24px;
+      background: var(--loopy-pink);
+      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+      opacity: 0.6;
+      transform: rotate(12deg);
+    }
+    .loopy-corner::before,
+    .loopy-corner::after {
+      content: '';
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: var(--loopy-pink);
+      border-radius: 50%;
+      top: -4px;
+    }
+    .loopy-corner::before { left: 2px; }
+    .loopy-corner::after { right: 2px; }
+
+    .empty-state {
+      text-align: center;
+      padding: 4rem 0;
+      color: var(--muted);
+    }
+    .empty-state .loopy-big {
+      width: 64px;
+      height: 52px;
+      background: var(--loopy-pink);
+      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+      margin: 0 auto 1.5rem;
+      opacity: 0.5;
+      position: relative;
+    }
+    .empty-state .loopy-big::before,
+    .empty-state .loopy-big::after {
+      content: '';
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      background: var(--loopy-pink);
+      border-radius: 50%;
+      top: -8px;
+    }
+    .empty-state .loopy-big::before { left: 6px; }
+    .empty-state .loopy-big::after { right: 6px; }
   </style>
 
-  <div class="post-list">
-    {posts.map(post => (
-      <article class="post-item">
-        <h2><a href={`${import.meta.env.BASE_URL}posts/${post.slug}/`}>{post.data.title}</a></h2>
-        <div class="post-meta">
-          {post.data.date.toLocaleDateString('zh-CN')}
-          {post.data.pdf && ' · PDF'}
-        </div>
-        <p class="post-desc">{post.data.description}</p>
-        {post.data.tags && (
-          <div class="tags">
-            {post.data.tags.map(tag => <span class="tag">{tag}</span>)}
-          </div>
-        )}
-      </article>
-    ))}
+  <div class="journal-stats">
+    <span><strong>{totalPosts}</strong> 篇文章</span>
+    <span>最近更新：{posts.length > 0 ? posts[0].data.date.toLocaleDateString('zh-CN') : '-'}</span>
+    <span>收录领域：制度设计、公共政策、社会科学</span>
   </div>
+
+  {posts.length === 0 ? (
+    <div class="empty-state">
+      <div class="loopy-big"></div>
+      <p>暂无文章，请前往 <code>src/content/posts/</code> 添加 Markdown 文件</p>
+    </div>
+  ) : (
+    <div class="post-list">
+      {posts.map((post, index) => (
+        <article class="post-item">
+          <div class="loopy-corner" style={`opacity: ${0.3 + (index % 3) * 0.2}; transform: rotate(${12 + (index % 5) * 8}deg);`}></div>
+          <h2>
+            <a href={`${import.meta.env.BASE_URL}posts/${post.slug}/`}>{post.data.title}</a>
+            {post.data.pdf && <span class="pdf-badge">PDF</span>}
+          </h2>
+          <div class="post-meta">
+            {post.data.date.toLocaleDateString('zh-CN')}
+            {post.data.tags && post.data.tags.length > 0 && ` · ${post.data.tags.join(' · ')}`}
+          </div>
+          <p class="post-desc">{post.data.description}</p>
+          {post.data.tags && post.data.tags.length > 0 && (
+            <div class="tags">
+              {post.data.tags.map(tag => <span class="tag">{tag}</span>)}
+            </div>
+          )}
+        </article>
+      ))}
+    </div>
+  )}
 </Layout>

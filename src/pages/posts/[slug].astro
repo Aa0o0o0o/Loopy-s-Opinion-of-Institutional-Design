@@ -15,13 +15,99 @@ const { Content } = await post.render();
 ---
 <Layout title={`${post.data.title} | Loopy's Opinion`} description={post.data.description}>
   <style>
-    .post-header { margin-bottom: 2rem; }
-    .post-header h1 { font-size: 1.75rem; margin-bottom: 0.5rem; }
-    .post-meta { color: var(--muted); font-size: 0.875rem; }
-    .pdf-box {
+    .back {
+      margin-bottom: 2rem;
+      font-size: 0.85rem;
+      font-family: "Noto Sans SC", sans-serif;
+    }
+    .back a {
+      color: var(--muted);
+    }
+    .back a:hover {
+      color: var(--accent);
+    }
+
+    .post-header {
+      margin-bottom: 2rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .post-header h1 {
+      font-size: 1.6rem;
+      margin-bottom: 0.75rem;
+      font-weight: 700;
+      line-height: 1.35;
+    }
+    .post-meta {
+      color: var(--muted);
+      font-size: 0.85rem;
+      font-family: "Noto Sans SC", sans-serif;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem 1rem;
+      align-items: center;
+    }
+    .post-meta .meta-divider {
+      color: var(--border);
+    }
+    .post-meta .doi-like {
+      font-family: "Courier New", monospace;
+      font-size: 0.75rem;
+      color: #888;
+      background: var(--abstract-bg);
+      padding: 0.1rem 0.4rem;
+      border-radius: 2px;
+    }
+
+    /* Abstract block */
+    .abstract-block {
+      background: var(--abstract-bg);
+      border-left: 3px solid var(--accent);
+      padding: 1.25rem 1.5rem;
+      margin: 1.5rem 0 2rem;
+    }
+    .abstract-block .abstract-title {
+      font-family: "Noto Sans SC", sans-serif;
+      font-weight: 600;
+      font-size: 0.8rem;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.5rem;
+    }
+    .abstract-block .abstract-text {
+      font-size: 0.92rem;
+      line-height: 1.85;
+      color: var(--text);
+    }
+    .abstract-block .keywords-line {
+      margin-top: 0.75rem;
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+    .abstract-block .keywords-line strong {
+      color: var(--accent);
+      font-weight: 600;
+      font-family: "Noto Sans SC", sans-serif;
+    }
+
+    /* PDF viewer */
+    .pdf-section {
       margin: 2rem 0;
+    }
+    .pdf-label {
+      font-family: "Noto Sans SC", sans-serif;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .pdf-box {
       border: 1px solid var(--border);
-      border-radius: 8px;
+      border-radius: 4px;
       overflow: hidden;
       background: var(--card);
     }
@@ -30,42 +116,157 @@ const { Content } = await post.render();
       padding: 2rem;
       text-align: center;
     }
-    .content { font-size: 1.05rem; }
-    .content p { margin-bottom: 1rem; }
     .btn {
       display: inline-block;
       background: var(--accent);
       color: white;
-      padding: 0.6rem 1.2rem;
-      border-radius: 6px;
-      font-size: 0.9rem;
-      margin-top: 1rem;
+      padding: 0.5rem 1rem;
+      border-radius: 3px;
+      font-size: 0.85rem;
+      font-family: "Noto Sans SC", sans-serif;
+      margin-top: 0.75rem;
     }
     .btn:hover { text-decoration: none; opacity: 0.9; }
-    .back { margin-bottom: 2rem; font-size: 0.9rem; }
+
+    /* Markdown content */
+    .content {
+      font-size: 1rem;
+      line-height: 1.85;
+    }
+    .content :global(h2) {
+      font-size: 1.25rem;
+      margin: 2rem 0 1rem;
+      padding-bottom: 0.4rem;
+      border-bottom: 1px solid var(--border);
+      color: var(--accent);
+    }
+    .content :global(h3) {
+      font-size: 1.1rem;
+      margin: 1.5rem 0 0.75rem;
+      color: var(--accent-light);
+    }
+    .content :global(p) {
+      margin-bottom: 1rem;
+      text-align: justify;
+    }
+    .content :global(ul), .content :global(ol) {
+      margin: 1rem 0 1rem 1.5rem;
+    }
+    .content :global(li) {
+      margin-bottom: 0.4rem;
+    }
+    .content :global(blockquote) {
+      border-left: 3px solid var(--loopy-pink);
+      padding-left: 1rem;
+      margin: 1.25rem 0;
+      color: var(--muted);
+      font-style: italic;
+    }
+    .content :global(pre) {
+      background: #f0ede6;
+      padding: 1rem;
+      border-radius: 4px;
+      overflow-x: auto;
+      font-size: 0.85rem;
+      line-height: 1.6;
+    }
+    .content :global(code) {
+      font-family: "Courier New", Consolas, monospace;
+      font-size: 0.88em;
+      background: #f0ede6;
+      padding: 0.1rem 0.3rem;
+      border-radius: 2px;
+    }
+    .content :global(pre code) {
+      background: none;
+      padding: 0;
+    }
+
+    /* Reference section style */
+    .content :global(.references) {
+      margin-top: 2rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.9rem;
+    }
+    .content :global(.references h2) {
+      font-size: 1.1rem;
+      border-bottom: none;
+    }
+
+    /* Loopy reading decoration */
+    .loopy-reading {
+      display: flex;
+      justify-content: center;
+      margin: 2rem 0;
+      opacity: 0.4;
+    }
+    .loopy-reading .loopy-sit {
+      width: 40px;
+      height: 34px;
+      background: var(--loopy-pink);
+      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+      position: relative;
+    }
+    .loopy-reading .loopy-sit::before,
+    .loopy-reading .loopy-sit::after {
+      content: '';
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      background: var(--loopy-pink);
+      border-radius: 50%;
+      top: -5px;
+    }
+    .loopy-reading .loopy-sit::before { left: 4px; }
+    .loopy-reading .loopy-sit::after { right: 4px; }
   </style>
 
-  <div class="back"><a href={`${import.meta.env.BASE_URL}`}>← 返回首页</a></div>
+  <div class="back"><a href={`${import.meta.env.BASE_URL}`}>← 返回期刊首页</a></div>
 
   <article>
     <div class="post-header">
       <h1>{post.data.title}</h1>
       <div class="post-meta">
-        {post.data.date.toLocaleDateString('zh-CN')}
-        {post.data.tags && post.data.tags.map(tag => ` · ${tag}`)}
+        <span>{post.data.date.toLocaleDateString('zh-CN')}</span>
+        {post.data.tags && post.data.tags.length > 0 && (
+          <>
+            <span class="meta-divider">|</span>
+            <span>{post.data.tags.join(' · ')}</span>
+          </>
+        )}
+        <span class="meta-divider">|</span>
+        <span class="doi-like">DOI: 10.loopy/{post.slug}</span>
       </div>
     </div>
 
+    <div class="abstract-block">
+      <div class="abstract-title">摘要 / Abstract</div>
+      <div class="abstract-text">{post.data.description}</div>
+      {post.data.tags && post.data.tags.length > 0 && (
+        <div class="keywords-line">
+          <strong>关键词：</strong>{post.data.tags.join('；')}
+        </div>
+      )}
+    </div>
+
     {post.data.pdf && (
-      <div class="pdf-box">
-        <iframe src={`${import.meta.env.BASE_URL}pdfs/${post.data.pdf}`} title={post.data.title}>
-          <div class="pdf-fallback">
-            <p>你的浏览器不支持内嵌 PDF。</p>
-            <a class="btn" href={`${import.meta.env.BASE_URL}pdfs/${post.data.pdf}`} target="_blank">下载 PDF</a>
-          </div>
-        </iframe>
+      <div class="pdf-section">
+        <div class="pdf-label">📄 全文 PDF</div>
+        <div class="pdf-box">
+          <iframe src={`${import.meta.env.BASE_URL}pdfs/${post.data.pdf}`} title={post.data.title}>
+            <div class="pdf-fallback">
+              <p>你的浏览器不支持内嵌 PDF。</p>
+              <a class="btn" href={`${import.meta.env.BASE_URL}pdfs/${post.data.pdf}`} target="_blank">下载 PDF</a>
+            </div>
+          </iframe>
+        </div>
       </div>
     )}
+
+    <div class="loopy-reading" aria-hidden="true">
+      <div class="loopy-sit"></div>
+    </div>
 
     <div class="content">
       <Content />

@@ -12,59 +12,261 @@ const { title, description = "Loopy's Opinion of Institutional Design" } = Astro
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{title}</title>
   <meta name="description" content={description} />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@400;500;600&display=swap" rel="stylesheet">
   <style is:global>
     :root {
-      --bg: #fafafa;
+      --bg: #f7f5f0;
       --text: #1a1a1a;
-      --muted: #666;
-      --accent: #2c5282;
-      --border: #e2e2e2;
+      --muted: #555;
+      --accent: #1e3a5f;
+      --accent-light: #2c5282;
+      --border: #d4d0c8;
       --card: #fff;
+      --abstract-bg: #f0ede6;
+      --loopy-pink: #f4b5c6;
+      --loopy-dark: #e291a8;
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      font-family: "Noto Serif SC", "Source Han Serif SC", "SimSun", serif;
       background: var(--bg);
       color: var(--text);
-      line-height: 1.7;
+      line-height: 1.8;
+      font-size: 16px;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      font-family: "Noto Sans SC", "Source Han Sans SC", "Microsoft YaHei", sans-serif;
+      font-weight: 600;
+      line-height: 1.4;
     }
     a { color: var(--accent); text-decoration: none; }
-    a:hover { text-decoration: underline; }
-    .container { max-width: 800px; margin: 0 auto; padding: 0 1.5rem; }
+    a:hover { text-decoration: underline; color: var(--accent-light); }
+    .container { max-width: 840px; margin: 0 auto; padding: 0 1.5rem; }
+
+    /* Academic Header */
     header {
-      border-bottom: 1px solid var(--border);
+      border-bottom: 2px solid var(--accent);
       background: var(--card);
-      padding: 1.5rem 0;
+      padding: 2rem 0 1.5rem;
       margin-bottom: 3rem;
+      position: relative;
     }
-    header h1 { font-size: 1.25rem; font-weight: 600; }
+    header .journal-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    header h1 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
     header h1 a { color: var(--text); }
     header h1 a:hover { text-decoration: none; }
-    header p { color: var(--muted); font-size: 0.875rem; margin-top: 0.25rem; }
+    header .subtitle {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-top: 0.35rem;
+      font-family: "Noto Serif SC", serif;
+      font-style: italic;
+    }
+    header .issn {
+      font-size: 0.75rem;
+      color: var(--muted);
+      font-family: "Noto Sans SC", sans-serif;
+      text-align: right;
+    }
+    header .issn span {
+      display: block;
+    }
+
+    /* Loopy decorations in header */
+    .loopy-header-deco {
+      position: absolute;
+      bottom: -12px;
+      right: 2rem;
+      display: flex;
+      gap: 6px;
+      align-items: flex-end;
+    }
+    .loopy-blob {
+      width: 24px;
+      height: 20px;
+      background: var(--loopy-pink);
+      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+      position: relative;
+    }
+    .loopy-blob::before,
+    .loopy-blob::after {
+      content: '';
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: var(--loopy-pink);
+      border-radius: 50%;
+      top: -4px;
+    }
+    .loopy-blob::before { left: 2px; }
+    .loopy-blob::after { right: 2px; }
+    .loopy-blob.face::before,
+    .loopy-blob.face::after {
+      background: #333;
+      width: 3px;
+      height: 3px;
+      top: 6px;
+    }
+    .loopy-blob.face::before { left: 5px; }
+    .loopy-blob.face::after { right: 5px; }
+    .loopy-blob.face .mouth {
+      position: absolute;
+      width: 6px;
+      height: 3px;
+      border-bottom: 2px solid #333;
+      border-radius: 0 0 50% 50%;
+      bottom: 5px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    /* Footer */
     footer {
       border-top: 1px solid var(--border);
-      margin-top: 4rem;
-      padding: 2rem 0;
+      margin-top: 5rem;
+      padding: 2.5rem 0 2rem;
       text-align: center;
       color: var(--muted);
-      font-size: 0.875rem;
+      font-size: 0.85rem;
+      position: relative;
+    }
+    footer .loopy-footer-line {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 1rem;
+    }
+    footer .loopy-footer-line .dot {
+      width: 8px;
+      height: 8px;
+      background: var(--loopy-pink);
+      border-radius: 50%;
+    }
+    footer .loopy-footer-line .line {
+      width: 60px;
+      height: 2px;
+      background: var(--loopy-pink);
+      opacity: 0.5;
+    }
+
+    /* Abstract block */
+    .abstract {
+      background: var(--abstract-bg);
+      border-left: 4px solid var(--accent);
+      padding: 1.25rem 1.5rem;
+      margin: 1.5rem 0;
+      font-size: 0.95rem;
+      line-height: 1.8;
+    }
+    .abstract-label {
+      font-family: "Noto Sans SC", sans-serif;
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+    }
+    .keywords {
+      margin-top: 0.75rem;
+      font-size: 0.85rem;
+    }
+    .keywords strong {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    /* Floating Loopy (page decoration) */
+    .loopy-float {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      width: 48px;
+      height: 40px;
+      background: var(--loopy-pink);
+      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+      opacity: 0.25;
+      pointer-events: none;
+      z-index: 100;
+      transition: opacity 0.3s;
+    }
+    .loopy-float:hover {
+      opacity: 0.5;
+    }
+    .loopy-float::before,
+    .loopy-float::after {
+      content: '';
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      background: var(--loopy-pink);
+      border-radius: 50%;
+      top: -6px;
+    }
+    .loopy-float::before { left: 4px; }
+    .loopy-float::after { right: 4px; }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      header .journal-info { flex-direction: column; }
+      header .issn { text-align: left; }
+      .loopy-header-deco { display: none; }
+      .loopy-float { display: none; }
     }
   </style>
 </head>
 <body>
   <header>
     <div class="container">
-      <h1><a href={import.meta.env.BASE_URL}>Loopy's Opinion of Institutional Design</a></h1>
-      <p>关于制度设计的个人思考与随笔</p>
+      <div class="journal-info">
+        <div>
+          <h1><a href={import.meta.env.BASE_URL}>Loopy's Opinion of Institutional Design</a></h1>
+          <p class="subtitle">关于制度设计的个人思考与随笔</p>
+        </div>
+        <div class="issn">
+          <span>Vol. {new Date().getFullYear()}</span>
+          <span>No. {new Date().getMonth() + 1}</span>
+        </div>
+      </div>
+    </div>
+    <div class="loopy-header-deco">
+      <div class="loopy-blob"><div class="mouth"></div></div>
+      <div class="loopy-blob face"><div class="mouth"></div></div>
+      <div class="loopy-blob"><div class="mouth"></div></div>
     </div>
   </header>
+
   <main class="container">
     <slot />
   </main>
+
   <footer>
+    <div class="loopy-footer-line">
+      <div class="line"></div>
+      <div class="dot"></div>
+      <div class="dot" style="width:10px;height:10px;"></div>
+      <div class="dot"></div>
+      <div class="line"></div>
+    </div>
     <div class="container">
       <p>© {new Date().getFullYear()} Loopy. All rights reserved.</p>
+      <p style="margin-top:0.25rem;font-size:0.75rem;">本站点所有文章仅供学术交流使用</p>
     </div>
   </footer>
+
+  <div class="loopy-float" aria-hidden="true"></div>
 </body>
 </html>
